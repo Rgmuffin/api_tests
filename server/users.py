@@ -67,17 +67,22 @@ class Users:
 
 
 class Departments:
-    def GET(self, department=None):
+    def GET(self, department=None, name=None):
         data1 = []
-        if department == None:
+        data2 = []
+        if department == None and name == None:
             for dept in users:
                 data1.append(users[dept]["department"])
             return ('List of Departments: %s' % list(sorted(set(data1))))
         else:
             for dept in users:
-                if department in users[dept]['department']:
-                    data1.append(users[dept])
-        return (f'Users in department {department}: {data1}')
+                if name in users[dept]['department']:
+                    data2.append(users[dept]['department'])
+        return (f'Similar with {name}: {data2[0]}')
+        #     for dept in users:
+        #         if department in users[dept]['department']:
+        #             data1.append(users[dept])
+        # return (f'Users in department {department}: {data1}')
 
     exposed = True
 

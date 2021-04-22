@@ -5,7 +5,7 @@ passed='Passed'
 failed='Failed'
 
 def logs(func_name, status, error='No errors'):
-    with open('tests.log', 'a+', encoding='utf-8') as f1:
+    with open('logs.log', 'a+', encoding='utf-8') as f1:
         line=f'{func_name}, {status}, {error}\n'
         f1.writelines(line)
 
@@ -67,7 +67,7 @@ def test_user_by_full_name():
 
 def test_username_contains():
     func_name = test_username_contains.__name__
-    r = requests.get('http://127.0.0.1:8080/api/users/Art')
+    r = requests.get('http://127.0.0.1:8080/api/users/?username=Art')
     if r.text == "data: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}," \
                  " {'username': 'Arthur K', 'email': 'arthur_k@gmail.com', 'department': 'Omega', 'date_joined': '2020-02-11'}]":
         logs(func_name, passed)
@@ -87,22 +87,27 @@ def test_department_list():
 
 def test_department_full():
     func_name = test_department_full.__name__
-    r = requests.get('http://127.0.0.1:8080/api/department/Alpha')
-    if r.text == "Users in department Alpha: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}, " \
-                 "{'username': 'Oleg T', 'email': 'oleg_t@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}]":
+    r = requests.get('http://127.0.0.1:8080/api/department/?name=Alpha')
+    if r.text == "Similar with Alpha: Alpha":
         logs(func_name, passed)
     else:
         logs(func_name, failed, "Wrong list of departments (")
-    assert r.text == "Users in department Alpha: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}, " \
-                     "{'username': 'Oleg T', 'email': 'oleg_t@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}]"
+    assert r.text == "Similar with Alpha: Alpha"
 
 def test_department_contains():
     func_name = test_department_contains.__name__
-    r = requests.get('http://127.0.0.1:8080/api/department/Al')
-    if r.text == "Users in department Al: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}, " \
-                 "{'username': 'Oleg T', 'email': 'oleg_t@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}]":
+    r = requests.get('http://127.0.0.1:8080/api/department/?name=Del')
+    if r.text == "Similar with Del: Delta":
         logs(func_name, passed)
     else:
         logs(func_name, failed, "Wrong list of departments (")
-    assert r.text == "Users in department Al: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}, " \
-                     "{'username': 'Oleg T', 'email': 'oleg_t@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}]"
+    assert r.text == "Similar with Del: Delta"
+
+def test_username_with_department():
+    func_name = test_username_with_department.__name__
+    r = requests.get('http://127.0.0.1:8080/api/users/?username=Art&department=Alpha')
+    if r.text == "data: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}]":
+        logs(func_name, passed)
+    else:
+        logs(func_name, failed, "Oops, users mismatch ;(")
+    assert r.text == "data: [{'username': 'Artem R', 'email': 'artem_r@gmail.com', 'department': 'Alpha', 'date_joined': '2020-02-11'}]"
