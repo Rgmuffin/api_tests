@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+
+  server:
+
+    build: server/
+
+    command: python3 ./users.py
+
+    ports:
+      - 8080:8080
+
+  client:
+
+    build: client/
+
+    command: sh -c "tail -f ../dev/null"
+
+    network_mode: host
+
+    depends_on:
+      - server
